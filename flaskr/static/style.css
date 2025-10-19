@@ -1,3 +1,6 @@
+* {
+    box-sizing: border-box;
+}
 html {
     font-family: sans-serif;
     background: #eee;
@@ -6,6 +9,12 @@ html {
 body {
     max-width: 960px;
     margin: 0 auto;
+    background: white;
+}
+.header {
+    padding: 30px;
+    font-size: 40px;
+    text-align: center;
     background: white;
 }
 h1 {
@@ -109,4 +118,11 @@ input.danger {
 input[type="submit"] {
     align-self: start;
     min-width: 10em;
+}
+
+.footer {
+    padding: 20px;
+    text-align: center;
+    background: #ddd;
+    margin-top: 20px;
 }

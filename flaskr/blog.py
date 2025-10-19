@@ -7,14 +7,24 @@ from flaskr.db import get_db
 bp = Blueprint("blog", __name__, url_prefix="/posts")
 
 
-@bp.route("/")
-def index():
+def get_all_posts(search=""):
     db = get_db()
     posts = db.execute(
         "SELECT p.id, title, body, created, author_id, username"
         " FROM post p JOIN user u ON  p.author_id = u.id"
-        " ORDER BY created DESC"
+        " WHERE body like ('%' || ?1 || '%')"
+        " OR title like ('%' || ?1 || '%')"
+        " ORDER BY created DESC",
+        (search,),
     ).fetchall()
+    return posts
+
+
+@bp.route("/")
+def index():
+    query = request.args.get("q", "")
+
+    posts = get_all_posts(search=query)
     return render_template("blog/index.html", posts=posts)
 
 
@@ -63,11 +73,28 @@ def get_post(id, check_author=True):
     return post
 
 
-@bp.route("/<int:id>", methods=("GET", "POST"))
+def get_comments(id):
+    comments = (
+        get_db()
+        .execute(
+            "SELECT c.id, c.body, c.created, u.username"
+            " FROM comment c JOIN user u ON c.author_id = u.id"
+            " WHERE c.post_id = ?"
+            " ORDER BY c.created DESC",
+            (id,),
+        )
+        .fetchall()
+    )
+
+    return comments
+
+
+@bp.route("/<int:id>", methods=("GET",))
 def view_post(id):
     post = get_post(id, check_author=False)
+    comments = get_comments(id)
 
-    return render_template("blog/view.html", post=post)
+    return render_template("blog/view.html", post=post, comments=comments)
 
 
 @bp.route("/<int:id>/update", methods=("GET", "POST"))
@@ -104,3 +131,31 @@ def delete(id):
     db.execute("DELETE FROM post WHERE id = ?", (id,))
     db.commit()
     return redirect(url_for("blog.index"))
+
+
+@bp.route("/<int:id>/comment", methods=("POST",))
+@login_required
+def comment(id):
+    get_post(id, check_author=False)
+
+    body = request.form["body"]
+    error = None
+
+    if not body:
+        error = "Comment cannot be empty."
+
+    if error is not None:
+        flash(error)
+    else:
+        db = get_db()
+        db.execute(
+            "INSERT INTO comment (body, author_id, post_id) VALUES (?, ?, ?)",
+            (body, g.user["id"], id),
+        )
+        db.commit()
+
+    return redirect(url_for("blog.view_post", id=id))
+
+
+# @bp.route('/search', methods=['GET', 'POST'])
+# def search():

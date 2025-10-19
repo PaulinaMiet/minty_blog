@@ -2,12 +2,19 @@
 
 {% block header %}
     <h1>{% block title %}{{ post['title'] }}{% endblock %}<h1>
+
+
 {% endblock %}
 
 {% block content %}
 <p class="post-meta">
-        Napisane przez {{ post['username'] }}
+    Napisane przez <i>{{ post['username'] }}</i>
         dnia {{ post['created'].strftime('%Y-%m-%d') }}
+        {% if g.user['id'] == post['author_id'] %}
+            <a class="action" href="{{ url_for('blog.update', id=post['id']) }}">
+                Edit
+            </a>
+        {% endif %}
 </p>
 <article class="post-body">
         {{ post['body'] }}
@@ -15,10 +22,29 @@
 
     <hr>
 
-    {% if g.user['id'] == post['author_id'] %}
-        <a class="action" href="{{ url_for('blog.update', id=post['id']) }}">
-            Edit
-        </a>
+    {% if g.user %}
+        <form action="{{ url_for('blog.comment', id=post['id']) }}" method="post">
+            <label for="body">Add a Comment</label>
+            <textarea name="body" id="body" required></textarea>
+            <input type="submit" value="Post Comment">
+        </form>
     {% endif %}
+
+    <section class="comments">
+        <h2>Comments</h2>
+        {% if comments %}
+            <ul>
+                {% for comment in comments %}
+                    <li class="comment">
+                        <p class="comment-body">{{ comment['body'] }}</p>
+                        <p class="comment-meta">
+                            by <strong>{{ comment['username'] }}</strong>
+                            on {{ comment['created'].strftime('%Y-%m-%d') }}
+                        </p>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    </section>
 
 {% endblock %}
