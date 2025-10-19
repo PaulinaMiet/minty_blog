@@ -4,7 +4,7 @@ from werkzeug.exceptions import abort
 from flaskr.auth import login_required
 from flaskr.db import get_db
 
-bp = Blueprint("blog", __name__)
+bp = Blueprint("blog", __name__, url_prefix="/posts")
 
 
 @bp.route("/")
@@ -61,6 +61,13 @@ def get_post(id, check_author=True):
         abort(403)
 
     return post
+
+
+@bp.route("/<int:id>", methods=("GET", "POST"))
+def view_post(id):
+    post = get_post(id, check_author=False)
+
+    return render_template("blog/view.html", post=post)
 
 
 @bp.route("/<int:id>/update", methods=("GET", "POST"))
