@@ -120,6 +120,18 @@ input[type="submit"] {
     min-width: 10em;
 }
 
+.comment-actions .action {
+    min-width: 65px;
+    text-align: center;
+    box-sizing: border-box;
+}
+
+.comment-edit form .action {
+    display: inline-block;
+    width: auto;
+    margin-bottom: 0;
+}
+
 .footer {
     padding: 20px;
     text-align: center;

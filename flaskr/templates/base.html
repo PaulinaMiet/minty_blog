@@ -29,3 +29,22 @@
 
 <section class="footer">
 </section>
+
+<script>
+    function toggleEdit(commentId) {
+      const viewDiv = document.getElementById('comment-view-' + commentId);
+      const editDiv = document.getElementById('comment-edit-' + commentId);
+
+      if (editDiv.style.display === 'none') {
+        // Show the edit form, hide the comment
+        editDiv.style.display = 'block';
+        viewDiv.style.display = 'none';
+      } else {
+        // Show the comment, hide the edit form (Cancel button)
+        editDiv.style.display = 'none';
+        viewDiv.style.display = 'block';
+      }
+    }
+  </script>
+  </body>
+</html>

@@ -20,6 +20,62 @@ def get_all_posts(search=""):
     return posts
 
 
+def get_post(id, check_author=True):
+    post = (
+        get_db()
+        .execute(
+            "SELECT p.id, title, body, created, author_id, username"
+            " FROM post p JOIN user u ON p.author_id = u.id"
+            " WHERE p.id = ?",
+            (id,),
+        )
+        .fetchone()
+    )
+
+    if post is None:
+        abort(404, f"Post id {id} doesn't exist.")
+
+    if check_author and post["author_id"] != g.user["id"]:
+        abort(403)
+
+    return post
+
+
+def get_comments(post_id):
+    comments = (
+        get_db()
+        .execute(
+            "SELECT c.id, c.body, c.created, c.author_id, u.username"
+            " FROM comment c JOIN user u ON c.author_id = u.id"
+            " WHERE c.post_id = ?"
+            " ORDER BY c.created DESC",
+            (post_id,),
+        )
+        .fetchall()
+    )
+
+    return comments
+
+
+def get_one_comment(comment_id, check_author=True):
+    comment = (
+        get_db().execute(
+            "SELECT c.id, c.body, c.created, c.author_id, c.post_id, u.username"
+            " FROM comment c JOIN user u ON c.author_id = u.id"
+            " WHERE c.id = ?",
+            (comment_id,),
+        )
+    ).fetchone()
+
+    if comment is None:
+        abort(404, f"Coment id {id} doesn't exist.")
+
+    if check_author and comment["author_id"] != g.user["id"]:
+        abort(403)
+
+    return comment
+
+
 @bp.route("/")
 def index():
     query = request.args.get("q", "")
@@ -50,43 +106,6 @@ def create():
             db.commit()
             return redirect(url_for("blog.index"))
     return render_template("blog/create.html")
-
-
-def get_post(id, check_author=True):
-    post = (
-        get_db()
-        .execute(
-            "SELECT p.id, title, body, created, author_id, username"
-            " FROM post p JOIN user u ON p.author_id = u.id"
-            " WHERE p.id = ?",
-            (id,),
-        )
-        .fetchone()
-    )
-
-    if post is None:
-        abort(404, f"Post id {id} doesn't exist.")
-
-    if check_author and post["author_id"] != g.user["id"]:
-        abort(403)
-
-    return post
-
-
-def get_comments(id):
-    comments = (
-        get_db()
-        .execute(
-            "SELECT c.id, c.body, c.created, u.username"
-            " FROM comment c JOIN user u ON c.author_id = u.id"
-            " WHERE c.post_id = ?"
-            " ORDER BY c.created DESC",
-            (id,),
-        )
-        .fetchall()
-    )
-
-    return comments
 
 
 @bp.route("/<int:id>", methods=("GET",))
@@ -157,5 +176,37 @@ def comment(id):
     return redirect(url_for("blog.view_post", id=id))
 
 
-# @bp.route('/search', methods=['GET', 'POST'])
-# def search():
+@bp.route("/comment/<int:id>/edit", methods=("POST",))
+@login_required
+def edit_comment(id):
+    comment = get_one_comment(id)
+
+    body = request.form["body"]
+    error = None
+
+    if not body:
+        error = "Wpisz treść komentarza"
+
+    if error is not None:
+        flash(error)
+    else:
+        db = get_db()
+        db.execute("UPDATE comment SET body = ? WHERE id = ?", (body, id))
+        db.commit()
+
+    return redirect(url_for("blog.view_post", id=comment["post_id"]))
+
+
+@bp.route("/comment/<int:id>/delete", methods=("POST",))
+@login_required
+def delete_comment(id):
+    comment = get_one_comment(id)
+    post_id = comment["post_id"]
+
+    db = get_db()
+    db.execute("DELETE FROM comment WHERE id = ?", (id,))
+    db.commit()
+
+    flash("Comment deleted.")
+
+    return redirect(url_for("blog.view_post", id=post_id))
