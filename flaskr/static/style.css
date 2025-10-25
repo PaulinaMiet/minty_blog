@@ -138,3 +138,35 @@ input[type="submit"] {
     background: #ddd;
     margin-top: 20px;
 }
+
+.content textarea {
+    padding: 0.5em;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.bio-view-text {
+    white-space: pre-wrap;
+    padding: 0.75em;
+    background: #f4f4f4;
+    border: 1px dashed #ccc;
+    border-radius: 4px;
+    min-height: 6em;
+    color: #333;
+    margin-bottom: 1em;
+}
+
+.content textarea[name="bio"] {
+    min-height: 6em;
+    padding: 0.75em;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    resize: vertical;
+    width: 100%;
+}
+
+.content textarea[name="bio"]:focus {
+    border-color: #377ba8;
+    box-shadow: 0 0 5px rgba(55, 123, 168, 0.5);
+    outline: none;
+}

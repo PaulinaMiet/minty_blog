@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+
+{% block header %}
+  <h1>{% block title %}User Profile{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+
+  <h2>Edit Profile</h2>
+  <form method="post" action="{{ url_for('auth.update_username') }}">
+    <label for="username">Username</label>
+    <input name="username" id="username"
+           value="{{ request.form['username'] or user['username'] }}" required>
+    <input type="submit" value="Save Username">
+  </form>
+
+  <hr>
+
+  <form method="post" action="{{ url_for('auth.update_bio') }}">
+
+    <div id="bio-view">
+      <label>Bio</label>
+      <p class="bio-view-text">
+        {{ user['bio'] or 'You have not set a bio yet.' }}
+      </p>
+      <div>
+        <button type="button" class="action" onclick="toggleEdit('bio-view', 'bio-edit')">
+          Edit Bio
+        </button>
+      </div>
+    </div>
+
+    <div id="bio-edit" style="display: none;">
+      <label for="bio">Bio</label>
+      <textarea name="bio" id="bio">{{ request.form['bio'] or user['bio'] or '' }}</textarea>
+
+      <div>
+        <button type="submit" class="action">Save Bio</button>
+        <button type="button" class="action" onclick="toggleEdit('bio-view', 'bio-edit')">
+          Cancel
+        </button>
+      </div>
+    </div>
+  </form>
+
+  <hr>
+
+  <h2>Change Password</h2>
+  <form method="post" action="{{ url_for('auth.change_password') }}">
+    <label for="old_password">Old Password</label>
+    <input type="password" name="old_password" id="old_password" required>
+
+    <label for="new_password">New Password</label>
+    <input type="password" name="new_password" id="new_password" required>
+
+    <label for="confirm_password">Confirm New Password</label>
+    <input type="password" name="confirm_password" id="confirm_password" required>
+
+    <input type="submit" value="Change Password">
+  </form>
+
+{% endblock %}
