@@ -2,27 +2,52 @@
 
 
 {% block header %}
-    <h1>{% block title %}Posts{% endblock %}</h1>
-    {% if g.user %}
-        <a class="action" href="{{ url_for('blog.create')}}">New</a>
-    {% endif %}
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+        <h1>{% block title %}Posts{% endblock %}</h1>
+        {% if g.user %}
+            <a class="btn btn-primary" href="{{ url_for('blog.create')}}">
+                <!-- Ikona Plus Circle -->
+                <svg class="icon-btn" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v6m3-3H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                </svg>
+                New Post
+            </a>
+        {% endif %}
+    </div>
+    <form>
+        <div class="form-group" style="display: flex; gap: 8px;">
+            <input type="text" name="q" placeholder="Szukaj postów...">
+            <button type="submit" class="btn">
+                <!-- Ikona Magnifying Glass -->
+                <svg class="icon-btn" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
+                </svg>
+                Szukaj
+            </button>
+        </div>
+    </form>
 {% endblock %}
 
 {% block content %}
     {% for post in posts %}
-        <article class="post">
+        <!-- Karta Terminal.css dla posta -->
+        <div class="terminal-card">
             <header>
-                <div>
-                    <h1><a href="{{ url_for('blog.view_post', id=post['id']) }}">{{ post['title'] }}</a></h1>
-                    <div class="about">by {{ post['username'] }} on {{ post['created'].strftime('%d-%m-%Y') }}</div>
-                </div>
-                {% if g.user['id'] == post['author_id'] %}
-                    <a class="action" href="{{ url_for('blog.update', id=post['id']) }}">Edit</a>
-                {% endif %}
+                <h2><a href="{{ url_for('blog.view_post', id=post['id']) }}">{{ post['title'] }}</a></h2>
             </header>
-        </article>
-        {% if not loop.last %}
-            <hr>
-        {% endif %}
+            <div class="card-body">
+                <p class="about">by <strong>{{ post['username'] }}</strong> on {{ post['created'].strftime('%d-%m-%Y') }}</p>
+
+                {% if g.user['id'] == post['author_id'] %}
+                    <a class="btn btn-default" href="{{ url_for('blog.update', id=post['id']) }}">
+                        <!-- Ikona Pencil -->
+                        <svg class="icon-btn" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                           <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L6.832 19.82a4.5 4.5 0 0 1-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 0 1 1.13-1.897L16.863 4.487Zm0 0L19.5 7.125" />
+                        </svg>
+                        Edit
+                    </a>
+                {% endif %}
+            </div>
+        </div>
     {% endfor %}
 {% endblock %}

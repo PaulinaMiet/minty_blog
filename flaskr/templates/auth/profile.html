@@ -8,55 +8,81 @@
 
   <h2>Edit Profile</h2>
   <form method="post" action="{{ url_for('auth.update_username') }}">
-    <label for="username">Username</label>
-    <input name="username" id="username"
-           value="{{ request.form['username'] or user['username'] }}" required>
-    <input type="submit" value="Save Username">
+    <fieldset>
+        <legend>Change Username</legend>
+        <div class="form-group">
+            <label for="username">Username:</label>
+            <input name="username" id="username"
+                   value="{{ request.form['username'] or user['username'] }}" required>
+        </div>
+        <div class="form-group">
+            <button type="submit" class="btn btn-primary">Save Username</button>
+        </div>
+    </fieldset>
   </form>
 
   <hr>
 
-  <form method="post" action="{{ url_for('auth.update_bio') }}">
-
-    <div id="bio-view">
-      <label>Bio</label>
-      <p class="bio-view-text">
-        {{ user['bio'] or 'You have not set a bio yet.' }}
-      </p>
-      <div>
-        <button type="button" class="action" onclick="toggleEdit('bio-view', 'bio-edit')">
-          Edit Bio
-        </button>
-      </div>
+  <h2>Edit Bio</h2>
+  <div id="bio-view">
+    <label>Your Bio:</label>
+    <div class="terminal-card">
+        <div class="card-body">
+            <p class="bio-view-text">
+                {{ user['bio'] or 'You have not set a bio yet.' }}
+            </p>
+        </div>
     </div>
-
-    <div id="bio-edit" style="display: none;">
-      <label for="bio">Bio</label>
-      <textarea name="bio" id="bio">{{ request.form['bio'] or user['bio'] or '' }}</textarea>
-
-      <div>
-        <button type="submit" class="action">Save Bio</button>
-        <button type="button" class="action" onclick="toggleEdit('bio-view', 'bio-edit')">
-          Cancel
+    <div style="margin-top: 1em;">
+        <button type="button" class="btn" onclick="toggleEdit('bio-view', 'bio-edit')">
+            <!-- Ikona Pencil -->
+            <svg class="icon-btn" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+               <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L6.832 19.82a4.5 4.5 0 0 1-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 0 1 1.13-1.897L16.863 4.487Zm0 0L19.5 7.125" />
+            </svg>
+            Edit Bio
         </button>
-      </div>
     </div>
-  </form>
+  </div>
+
+  <div id="bio-edit" style="display: none;">
+    <form method="post" action="{{ url_for('auth.update_bio') }}">
+        <fieldset>
+            <legend>Edit Your Bio</legend>
+            <div class="form-group">
+                <label for="bio">Bio:</label>
+                <textarea name="bio" id="bio" rows="5">{{ request.form['bio'] or user['bio'] or '' }}</textarea>
+            </div>
+            <div class="form-group">
+                <button type="submit" class="btn btn-primary">Save Bio</button>
+                <button type="button" class="btn btn-default" onclick="toggleEdit('bio-view', 'bio-edit')">
+                    Cancel
+                </button>
+            </div>
+        </fieldset>
+    </form>
+  </div>
 
   <hr>
 
-  <h2>Change Password</h2>
   <form method="post" action="{{ url_for('auth.change_password') }}">
-    <label for="old_password">Old Password</label>
-    <input type="password" name="old_password" id="old_password" required>
-
-    <label for="new_password">New Password</label>
-    <input type="password" name="new_password" id="new_password" required>
-
-    <label for="confirm_password">Confirm New Password</label>
-    <input type="password" name="confirm_password" id="confirm_password" required>
-
-    <input type="submit" value="Change Password">
+    <fieldset>
+        <legend>Change Password</legend>
+        <div class="form-group">
+            <label for="old_password">Old Password:</label>
+            <input type="password" name="old_password" id="old_password" required>
+        </div>
+        <div class="form-group">
+            <label for="new_password">New Password:</label>
+            <input type="password" name="new_password" id="new_password" required>
+        </div>
+        <div class="form-group">
+            <label for="confirm_password">Confirm New Password:</label>
+            <input type="password" name="confirm_password" id="confirm_password" required>
+        </div>
+        <div class="form-group">
+            <button type="submit" class="btn btn-primary">Change Password</button>
+        </div>
+    </fieldset>
   </form>
 
 {% endblock %}

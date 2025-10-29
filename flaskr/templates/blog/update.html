@@ -6,15 +6,30 @@
 
 {% block content %}
     <form method="post">
-        <label for="title">Title</label>
-        <input name="title" id="title"
-            value="{{ request.form['title'] or post['title'] }}" required>
-        <label for="body">Body</label>
-        <textarea name="body" id="body">{{ request.form['body'] or post['body']}}</textarea>
-        <input type="submit" value="Save">
+        <fieldset>
+            <legend>{% block form_title %}Edit Post{% endblock %}</legend>
+            <div class="form-group">
+                <label for="title">Title:</label>
+                <input name="title" id="title"
+                    value="{{ request.form['title'] or post['title'] }}" required>
+            </div>
+            <div class="form-group">
+                <label for="body">Body:</label>
+                <textarea name="body" id="body" rows="10">{{ request.form['body'] or post['body']}}</textarea>
+            </div>
+            <div class="form-group">
+                <button type="submit" class="btn btn-primary">Save Changes</button>
+            </div>
+        </fieldset>
     </form>
     <hr>
     <form action="{{ url_for('blog.delete', id=post['id']) }}" method="post">
-        <input class="danger" type="submit" value="Delete" onclick="return confirm('Are you sure?');">
+        <button class="btn btn-danger" type="submit" onclick="return confirm('Are you sure?');">
+            <!-- Ikona Trash -->
+            <svg class="icon-btn" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12.578 0c-.27.004-.539.01-.807.017m0 0c-1.171 0-2.241.124-3.283.35m15.743 0v-.001c0-.493.213-.986.534-1.333a.75.75 0 0 1 1.06 0c.32.347.533.84.533 1.333v.001Z" />
+            </svg>
+            Delete Post
+        </button>
     </form>
-    {% endblock %}
+{% endblock %}
