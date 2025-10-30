@@ -1,35 +1,35 @@
 {% extends 'base.html' %}
 
 {% block header %}
-  <h1>{% block title %}User Profile{% endblock %}</h1>
+  <h1>{% block title %}Konto użytkownika{% endblock %}</h1>
 {% endblock %}
 
 {% block content %}
 
-  <h2>Edit Profile</h2>
+  <h2>Edytuj Profil</h2>
   <form method="post" action="{{ url_for('auth.update_username') }}">
     <fieldset>
-        <legend>Change Username</legend>
+        <legend>Zmień login</legend>
         <div class="form-group">
-            <label for="username">Username:</label>
+            <label for="username">Login:</label>
             <input name="username" id="username"
                    value="{{ request.form['username'] or user['username'] }}" required>
         </div>
         <div class="form-group">
-            <button type="submit" class="btn btn-primary">Save Username</button>
+            <button type="submit" class="btn btn-primary">Zapisz</button>
         </div>
     </fieldset>
   </form>
 
   <hr>
 
-  <h2>Edit Bio</h2>
+  <h2>Edytuj Opis</h2>
   <div id="bio-view">
-    <label>Your Bio:</label>
+    <label>Twój Opis:</label>
     <div class="terminal-card">
         <div class="card-body">
             <p class="bio-view-text">
-                {{ user['bio'] or 'You have not set a bio yet.' }}
+                {{ user['bio'] or 'Nie masz jeszcze ustawionego opisu.' }}
             </p>
         </div>
     </div>
@@ -39,7 +39,7 @@
             <svg class="icon-btn" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L6.832 19.82a4.5 4.5 0 0 1-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 0 1 1.13-1.897L16.863 4.487Zm0 0L19.5 7.125" />
             </svg>
-            Edit Bio
+            Edytuj Opis
         </button>
     </div>
   </div>
@@ -47,15 +47,15 @@
   <div id="bio-edit" style="display: none;">
     <form method="post" action="{{ url_for('auth.update_bio') }}">
         <fieldset>
-            <legend>Edit Your Bio</legend>
+            <legend>Edytuj Opis</legend>
             <div class="form-group">
-                <label for="bio">Bio:</label>
+                <label for="bio">Opis:</label>
                 <textarea name="bio" id="bio" rows="5">{{ request.form['bio'] or user['bio'] or '' }}</textarea>
             </div>
             <div class="form-group">
-                <button type="submit" class="btn btn-primary">Save Bio</button>
+                <button type="submit" class="btn btn-primary">Zapisz</button>
                 <button type="button" class="btn btn-default" onclick="toggleEdit('bio-view', 'bio-edit')">
-                    Cancel
+                    Anuluj
                 </button>
             </div>
         </fieldset>
@@ -66,21 +66,21 @@
 
   <form method="post" action="{{ url_for('auth.change_password') }}">
     <fieldset>
-        <legend>Change Password</legend>
+        <legend>Zmień hasło</legend>
         <div class="form-group">
-            <label for="old_password">Old Password:</label>
+            <label for="old_password">Stare hasło:</label>
             <input type="password" name="old_password" id="old_password" required>
         </div>
         <div class="form-group">
-            <label for="new_password">New Password:</label>
+            <label for="new_password">Nowe hasło:</label>
             <input type="password" name="new_password" id="new_password" required>
         </div>
         <div class="form-group">
-            <label for="confirm_password">Confirm New Password:</label>
+            <label for="confirm_password">Potwierdź nowe hasło:</label>
             <input type="password" name="confirm_password" id="confirm_password" required>
         </div>
         <div class="form-group">
-            <button type="submit" class="btn btn-primary">Change Password</button>
+            <button type="submit" class="btn btn-primary">Zmień hasło</button>
         </div>
     </fieldset>
   </form>
