@@ -9,4 +9,4 @@ A blog with deliberate vulnerabilities written for my thesis.
 
 ![post view](screenshots/view.png)
 
-![comments](screenshots/view_comments.png)
+![comments](screenshots/view_comment.png)

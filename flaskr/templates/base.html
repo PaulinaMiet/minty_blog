@@ -1,53 +1,135 @@
 <!doctype html>
-<title>{% block title %}Miętkie Przemyślenia{% endblock %}</title>
-<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-<nav>
-  <h1><a href="{{ url_for('blog.index') }}"> Miętkie Przemyślenia</a></h1>
-  <form>
-      <input type="text" name="q">
-      <button>Szukaj</button>
-  </form>
-  <ul>
-    {% if g.user %}
-      <li><a href="{{ url_for('auth.profile') }}">{{ g.user['username'] }}</a>
-      <li><a href="{{ url_for('auth.logout') }}">Log Out</a>
-    {% else %}
-      <li><a href="{{ url_for('auth.register') }}">Register</a>
-      <li><a href="{{ url_for('auth.login') }}">Log In</a>
-    {% endif %}
-  </ul>
-</nav>
-<section class="content">
-  <header>
-    {% block header %}{% endblock %}
-  </header>
-  {% for message in get_flashed_messages() %}
-    <div class="flash">{{ message }}</div>
-  {% endfor %}
-  {% block content %}{% endblock %}
-</section>
+<html lang="pl">
+<head>
+    <meta charset="utf-C">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Miętkie Przemyślenia{% endblock %}</title>
+    <link rel="stylesheet" href="https://unpkg.com/terminal.css@0.7.4/dist/terminal.min.css" />
+    <style>
+        .terminal-menu{
+            width: auto;
+        }
+        .terminal-nav {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+        }
+        .icon-svg {
+            width: 20px;
+            height: 20px;
+            vertical-align: middle;
+            margin-right: 6px;
+        }
+        .icon-btn {
+             width: 16px;
+            height: 16px;
+            vertical-align: text-bottom;
+            margin-right: 4px;
+        }
 
-<section class="footer">
-</section>
+        .comment-actions .btn {
+            margin-right: 8px;
+        }
+        .terminal-media-body {
+            width: 100%;
+        }
+        .terminal-media-content{
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+        }
+        .btn-default{
+            height: 41px;
+        }
 
-<script>
-  function toggleEdit(viewId, editId) {
-    const viewDiv = document.getElementById(viewId);
-    const editDiv = document.getElementById(editId);
 
-    if (!viewDiv || !editDiv) {
-      console.error("Toggle elements not found:", viewId, editId);
-      return;
-    }
+    </style>
+</head>
 
-    if (editDiv.style.display === 'none' || editDiv.style.display === '') {
-      editDiv.style.display = 'block';
-      viewDiv.style.display = 'none';
-    } else {
-      editDiv.style.display = 'none';
-      viewDiv.style.display = 'block';
-    }
-  }
-</script>
-  </body>
+<body>
+    <div class="container">
+        <nav class="terminal-nav">
+            <div class="terminal-logo">
+                <div class="logo terminal-prompt">
+                    <a href="{{ url_for('blog.index') }}" class="no-style">Miętkie Przemyślenia</a>
+                </div>
+            </div>
+            <ul class="terminal-menu">
+                {% if g.user %}
+                <li>
+                    <a class="menu-item" href="{{ url_for('auth.profile') }}">
+                        <svg class="icon-svg" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                        </svg>
+                        {{ g.user['username'] }}
+                    </a>
+                </li>
+                <li>
+                    <a class="menu-item" href="{{ url_for('auth.logout') }}">
+                        <svg class="icon-svg" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15m0-3l-2.25-2.25m0 0l-2.25 2.25m2.25-2.25V15" />
+                        </svg>
+                        Wyloguj
+                    </a>
+                </li>
+                {% else %}
+                <li>
+                    <a class="menu-item" href="{{ url_for('auth.register') }}">
+                        <svg class="icon-svg" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M19 7.5v3m0 0v3m0-3h3m-3 0h-3m-2.25-4.125a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0ZM3 19.235v-.11a6.375 6.375 0 0 1 12.75 0v.109A12.318 12.318 0 0 1 9.374 21c-2.331 0-4.512-.645-6.374-1.766Z" />
+                        </svg>
+                        Zarejestruj
+                    </a>
+                </li>
+                <li>
+                    <a class="menu-item" href="{{ url_for('auth.login') }}">
+                        <svg class="icon-svg" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 9V5.25A2.25 2.25 0 0 1 10.5 3h6a2.25 2.25 0 0 1 2.25 2.25v13.5A2.25 2.25 0 0 1 16.5 21h-6a2.25 2.25 0 0 1-2.25-2.25V15M8.25 9h-3a1.5 1.5 0 0 0-1.5 1.5v3a1.5 1.5 0 0 0 1.5 1.5h3m0-6-3 3m0 0 3 3" />
+                        </svg>
+                        Zaloguj
+                    </a>
+                </li>
+                {% endif %}
+            </ul>
+        </nav>
+
+        <main>
+            <header>
+                {% block header %}{% endblock %}
+            </header>
+
+            {% for message in get_flashed_messages() %}
+                <div class="terminal-alert terminal-alert-error">{{ message }}</div>
+            {% endfor %}
+
+            {% block content %}{% endblock %}
+        </main>
+
+        <hr>
+
+        <footer class="terminal-footer">
+            <p>Miętkie Przemyślenia - Stworzone z ♥️</p>
+        </footer>
+    </div>
+
+    <script>
+        function toggleEdit(viewId, editId) {
+            const viewDiv = document.getElementById(viewId);
+            const editDiv = document.getElementById(editId);
+
+            if (!viewDiv || !editDiv) {
+                console.error("Toggle elements not found:", viewId, editId);
+                return;
+            }
+
+            if (editDiv.style.display === 'none' || editDiv.style.display === '') {
+                editDiv.style.display = 'block';
+                viewDiv.style.display = 'none';
+            } else {
+                editDiv.style.display = 'none';
+                viewDiv.style.display = 'block';
+            }
+        }
+    </script>
+</body>
 </html>
