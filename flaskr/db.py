@@ -4,6 +4,8 @@ from datetime import datetime
 import click
 from flask import current_app, g
 
+from flaskr.security_switch import A04
+
 
 def get_db():
     if "db" not in g:
@@ -25,9 +27,14 @@ def close_db(e=None):
 def init_db():
     db = get_db()
 
-    with current_app.open_resource("schema.sql") as f:
-        click.echo("Tworzenie bazy danych")
-        db.executescript(f.read().decode("utf8"))
+    if A04:
+        with current_app.open_resource("unsecure_schema.sql") as f:
+            click.echo("Tworzenie bazy danych")
+            db.executescript(f.read().decode("utf8"))
+    else:
+        with current_app.open_resource("schema.sql") as f:
+            click.echo("Tworzenie bazy danych")
+            db.executescript(f.read().decode("utf8"))
 
 
 # flask --app flaskr init-db

@@ -1,6 +1,5 @@
 import functools
 
-
 from click.termui import confirm
 from flask import (
     Blueprint,
@@ -12,12 +11,27 @@ from flask import (
     session,
     url_for,
 )
-
 from werkzeug.security import check_password_hash, generate_password_hash
 
 from flaskr.db import get_db
+from flaskr.security_switch import A04, A10
 
 bp = Blueprint("auth", __name__, url_prefix="/auth")
+
+
+def register_to_db(db, username, password):
+    if A04:  # unsafe
+        db.execute(
+            "INSERT INTO user (username, password) VALUES (?, ?)",
+            (username, password),
+        )
+        db.commit()
+    else:  # safer
+        db.execute(
+            "INSERT INTO user (username, password) VALUES (?, ?)",
+            (username, generate_password_hash(password)),
+        )
+        db.commit()
 
 
 @bp.route("/register", methods=("GET", "POST"))
@@ -33,18 +47,19 @@ def register():
         elif not password:
             error = "Hasło jest wymagane."
 
-        if error is None:
-            try:
-                db.execute(
-                    "INSERT INTO user (username, password) VALUES (?, ?)",
-                    (username, generate_password_hash(password)),
-                    # baza danych escapuje dane, więc nie powinno być możliwe zrobić injection tu
-                )
-                db.commit()
-            except db.IntegrityError:
-                error = f"Użytkownik {username} już jest zarejestrowany."
-            else:
+        if A10:
+            if error is None:
+                register_to_db(db, username, password)
                 return redirect(url_for("auth.login"))
+
+        else:
+            if error is None:
+                try:
+                    register_to_db(db, username, password)
+                except db.IntegrityError:
+                    error = f"Użytkownik {username} już jest zarejestrowany."
+                else:
+                    return redirect(url_for("auth.login"))
 
         flash(error)
 
@@ -63,8 +78,12 @@ def login():
         ).fetchone()
 
         # czy jest taki login w bazie i czy ma takie hasło
-        if user is None or not check_password_hash(user["password"], password):
-            error = "Niepoprawny login lub hasło."
+        if A04:
+            if user is None or user["password"] != password:
+                error = "Niepoprawny login lub hasło."
+        else:
+            if user is None or not check_password_hash(user["password"], password):
+                error = "Niepoprawny login lub hasło."
 
         if error is None:
             session.clear()
@@ -95,7 +114,7 @@ def logout():
     return redirect(url_for("index"))
 
 
-# wymaganie loginu, jeśli  nie jest zalogowany, otoczka przekierowuje do strony logowania.
+# wymaganie loginu
 def login_required(view):
     @functools.wraps(view)
     def wrapped_view(**kwargs):
@@ -179,20 +198,36 @@ def change_password():
         "SELECT password FROM user WHERE id = ?", (g.user["id"],)
     ).fetchone()
 
-    if not check_password_hash(user_hash["password"], old_password):
-        error = "Incorrect password."
-    elif not new_password:
-        error = "New password is required."
-    elif new_password != confirm_password:
-        error = "New passwords do not match."
+    if A04:
+        if user_hash["password"] != old_password:
+            error = "Incorrect password."
+        elif not new_password:
+            error = "New password is required."
+        elif new_password != confirm_password:
+            error = "New passwords do not match."
+    else:
+        if not check_password_hash(user_hash["password"], old_password):
+            error = "Incorrect password."
+        elif not new_password:
+            error = "New password is required."
+        elif new_password != confirm_password:
+            error = "New passwords do not match."
 
     if error is None:
-        db.execute(
-            "UPDATE user SET password = ? WHERE id = ?",
-            (generate_password_hash(new_password), g.user["id"]),
-        )
-        db.commit()
-        flash("Password updated successfully.")
+        if A04:
+            db.execute(
+                "UPDATE user SET password = ? WHERE id = ?",
+                (new_password, g.user["id"]),
+            )
+            db.commit()
+            flash("Password updated successfully.")
+        else:
+            db.execute(
+                "UPDATE user SET password = ? WHERE id = ?",
+                (generate_password_hash(new_password), g.user["id"]),
+            )
+            db.commit()
+            flash("Password updated successfully.")
     else:
         flash(error)
 

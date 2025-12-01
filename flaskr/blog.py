@@ -3,20 +3,26 @@ from werkzeug.exceptions import abort
 
 from flaskr.auth import login_required
 from flaskr.db import get_db
+from flaskr.security_switch import A01, A05
 
 bp = Blueprint("blog", __name__, url_prefix="/posts")
 
 
 def get_all_posts(search=""):
     db = get_db()
-    posts = db.execute(
-        "SELECT p.id, title, body, created, author_id, username"
-        " FROM post p JOIN user u ON  p.author_id = u.id"
-        " WHERE body like ('%' || ?1 || '%')"
-        " OR title like ('%' || ?1 || '%')"
-        " ORDER BY created DESC",
-        (search,),
-    ).fetchall()
+
+    if A05:
+        sql = f"SELECT p.id, title, body, created, author_id, username FROM post p JOIN user u ON  p.author_id = u.id WHERE body like '%{search}%' OR title like '%{search}%' ORDER BY created DESC"
+        posts = db.execute(sql).fetchall()
+    else:
+        posts = db.execute(
+            "SELECT p.id, title, body, created, author_id, username"
+            " FROM post p JOIN user u ON  p.author_id = u.id"
+            " WHERE body like ('%' || ?1 || '%')"
+            " OR title like ('%' || ?1 || '%')"
+            " ORDER BY created DESC",
+            (search,),
+        ).fetchall()
     return posts
 
 
@@ -35,7 +41,7 @@ def get_post(id, check_author=True):
     if post is None:
         abort(404, f"Post id {id} doesn't exist.")
 
-    if check_author and post["author_id"] != g.user["id"]:
+    if check_author and post["author_id"] != g.user["id"] and not A01:
         abort(403)
 
     return post
@@ -76,6 +82,7 @@ def get_one_comment(comment_id, check_author=True):
     return comment
 
 
+# Wyszukiwanie
 @bp.route("/")
 def index():
     query = request.args.get("q", "")
@@ -84,6 +91,7 @@ def index():
     return render_template("blog/index.html", posts=posts)
 
 
+# Dodanie posta
 @bp.route("/create", methods=("GET", "POST"))
 @login_required
 def create():
@@ -108,6 +116,7 @@ def create():
     return render_template("blog/create.html")
 
 
+# Wyświetlenie pojedyńczego posta i jego komentarzy
 @bp.route("/<int:id>", methods=("GET",))
 def view_post(id):
     post = get_post(id, check_author=False)
@@ -116,6 +125,7 @@ def view_post(id):
     return render_template("blog/view.html", post=post, comments=comments)
 
 
+# Edycja posta
 @bp.route("/<int:id>/update", methods=("GET", "POST"))
 @login_required
 def update(id):
@@ -142,6 +152,7 @@ def update(id):
     return render_template("blog/update.html", post=post)
 
 
+# Usunięcie posta
 @bp.route("/<int:id>/delete", methods=("POST",))
 @login_required
 def delete(id):
@@ -152,6 +163,7 @@ def delete(id):
     return redirect(url_for("blog.index"))
 
 
+# Dodanie komentarza
 @bp.route("/<int:id>/comment", methods=("POST",))
 @login_required
 def comment(id):
@@ -176,6 +188,7 @@ def comment(id):
     return redirect(url_for("blog.view_post", id=id))
 
 
+# Edycja komentarza
 @bp.route("/comment/<int:id>/edit", methods=("POST",))
 @login_required
 def edit_comment(id):
@@ -197,6 +210,7 @@ def edit_comment(id):
     return redirect(url_for("blog.view_post", id=comment["post_id"]))
 
 
+# Usunięcie komentarza
 @bp.route("/comment/<int:id>/delete", methods=("POST",))
 @login_required
 def delete_comment(id):
