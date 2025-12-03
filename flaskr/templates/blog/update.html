@@ -8,6 +8,8 @@
     <form method="post">
         <fieldset>
             <legend>{% block form_title %}Edytuj post{% endblock %}</legend>
+            <p class="about">by <strong>{{ post['username'] }}</strong> on {{ post['created'].strftime('%d-%m-%Y') }}</p>
+
             <div class="form-group">
                 <label for="title">Tytuł:</label>
                 <input name="title" id="title"

@@ -68,11 +68,15 @@ def register():
 
 @bp.route("/login", methods=("GET", "POST"))
 def login():
+    if g.user is not None:
+        return redirect(url_for("index"))
+
+    error = None
+
     if request.method == "POST":
         username = request.form["username"]
         password = request.form["password"]
         db = get_db()
-        error = None
         user = db.execute(
             "SELECT * FROM user WHERE username = ?", (username,)
         ).fetchone()
@@ -92,7 +96,11 @@ def login():
 
         flash(error)
 
-    return render_template("auth/login.html")
+    return_code = 200
+    if error:
+        return_code = 403
+
+    return render_template("auth/login.html"), return_code
 
 
 # sprawdza czy nie ma już zesji z użytkownikiem
@@ -119,7 +127,7 @@ def login_required(view):
     @functools.wraps(view)
     def wrapped_view(**kwargs):
         if g.user is None:
-            return redirect(url_for("suth.login"))
+            return redirect(url_for("auth.login"))
 
         return view(**kwargs)
 
