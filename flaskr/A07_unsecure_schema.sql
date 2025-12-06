@@ -145,4 +145,6 @@ INSERT INTO "post" ("id","author_id","created","title","body") VALUES (4,1,'2025
 
                 <p>Mówiąc prościej, żądanie <strong>POST</strong> może być obsługiwane przez serwer w dowolny sposób (np. utworzyć nowy zasób, zaktualizować istniejące), podczas gdy <strong>PUT</strong> powinno być traktowane jako "całkowite zastąpienie" zasobu. Kluczową cechą PUT jest **idempotentność** – wielokrotne wysłanie tego samego żądania PUT powinno dać ten sam rezultat, co pojedyncze wysłanie.</p>
             </div>');
+INSERT INTO "user" ("id","username","password","bio") VALUES (1,'admin','admin','Lorem Ipsum');
+INSERT INTO "user" ("id","username","password","bio") VALUES (4,'user','pass',NULL);
 COMMIT;

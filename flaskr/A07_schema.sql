@@ -145,4 +145,6 @@ INSERT INTO "post" ("id","author_id","created","title","body") VALUES (4,1,'2025
 
                 <p>Mówiąc prościej, żądanie <strong>POST</strong> może być obsługiwane przez serwer w dowolny sposób (np. utworzyć nowy zasób, zaktualizować istniejące), podczas gdy <strong>PUT</strong> powinno być traktowane jako "całkowite zastąpienie" zasobu. Kluczową cechą PUT jest **idempotentność** – wielokrotne wysłanie tego samego żądania PUT powinno dać ten sam rezultat, co pojedyncze wysłanie.</p>
             </div>');
+INSERT INTO "user" ("id","username","password","bio") VALUES (1,'admin','scrypt:32768:8:1$1tsptdw5f1aqPNlc$e5ddcffc44d0f85cde61d38aea7b33663c8a464a12336aea2f20feb5c5810dce14a206f024c61663e1bedc43c9f3a9d6ca7bbbdbdb0f3e61e4ae91565402d448','Lorem Ipsum');
+INSERT INTO "user" ("id","username","password","bio") VALUES (4,'user','scrypt:32768:8:1$6StUItIT1SIs3Zt1$4f59781799792759f0dec34cd1f14312a073ddc111205cde04f63aa9d73a99a5cd7d58f4011c252126735ef394cf49c3274f244fc3a2e4c088b48f4e0da873bc',NULL);
 COMMIT;
