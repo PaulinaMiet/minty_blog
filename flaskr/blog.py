@@ -1,4 +1,5 @@
 from flask import Blueprint, flash, g, redirect, render_template, request, url_for
+from nh3 import clean  # pyright: ignore[reportMissingImports]
 from werkzeug.exceptions import abort
 
 from flaskr.auth import login_required
@@ -106,6 +107,7 @@ def create():
         if error is not None:
             flash(error)
         else:
+            body = clean(body)
             db = get_db()
             db.execute(
                 " INSERT INTO post (title, body, author_id) Values (?, ?, ?) ",
@@ -142,6 +144,7 @@ def update(id):
         if error is not None:
             flash(error)
         else:
+            body = clean(body)
             db = get_db()
             db.execute(
                 "UPDATE post SET title = ?, body = ? WHERE id = ?", (title, body, id)

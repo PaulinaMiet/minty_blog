@@ -27,20 +27,29 @@ def close_db(e=None):
 def init_db():
     db = get_db()
 
-    if A04 and A07:
+    # if A04 and A07:
+    #     with current_app.open_resource("A07_unsecure_schema.sql") as f:
+    #         click.echo("Tworzenie bazy danych")
+    #         db.executescript(f.read().decode("utf8"))
+    # elif A04:
+    #     with current_app.open_resource("unsecure_schema.sql") as f:
+    #         click.echo("Tworzenie bazy danych")
+    #         db.executescript(f.read().decode("utf8"))
+    # elif A07:
+    #     with current_app.open_resource("A07_schema.sql") as f:
+    #         click.echo("Tworzenie bazy danych")
+    #         db.executescript(f.read().decode("utf8"))
+    # else:
+    #     with current_app.open_resource("schema.sql") as f:
+    #         click.echo("Tworzenie bazy danych")
+    #         db.executescript(f.read().decode("utf8"))
+
+    if A04:
         with current_app.open_resource("A07_unsecure_schema.sql") as f:
             click.echo("Tworzenie bazy danych")
             db.executescript(f.read().decode("utf8"))
-    elif A04:
-        with current_app.open_resource("unsecure_schema.sql") as f:
-            click.echo("Tworzenie bazy danych")
-            db.executescript(f.read().decode("utf8"))
-    elif A07:
-        with current_app.open_resource("A07_schema.sql") as f:
-            click.echo("Tworzenie bazy danych")
-            db.executescript(f.read().decode("utf8"))
     else:
-        with current_app.open_resource("schema.sql") as f:
+        with current_app.open_resource("A07_schema.sql") as f:
             click.echo("Tworzenie bazy danych")
             db.executescript(f.read().decode("utf8"))
 
